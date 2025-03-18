@@ -1,6 +1,8 @@
 package service
 
 import (
+	"crypto/sha512"
+
 	model "github.com/zk1569/pikboard-api/src/models"
 	repository "github.com/zk1569/pikboard-api/src/repositories"
 )
@@ -26,5 +28,8 @@ func GetUserInstance() UserInterface {
 }
 
 func (self *User) CreateUser(username, email, password string) (*model.User, error) {
-	return self.userRepository.CreateUser(username, email, password)
+
+	hash := sha512.Sum512([]byte(password))
+
+	return self.userRepository.CreateUser(username, email, hash)
 }

@@ -13,5 +13,5 @@ func init() {
 }
 
 type UserInterface interface {
-	CreateUser(username, email, password string) (*model.User, error)
+	CreateUser(username, email string, password [64]byte) (*model.User, error)
 }

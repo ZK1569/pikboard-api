@@ -29,11 +29,11 @@ func GetUserInstance() UserInterface {
 	return singleUserInstance
 }
 
-func (self *User) CreateUser(username, email, password string) (*model.User, error) {
+func (self *User) CreateUser(username, email string, password [64]byte) (*model.User, error) {
 	user := model.User{
 		Username: username,
 		Email:    email,
-		Password: password,
+		Password: []byte{000},
 	}
 
 	result := self.db.DB.Create(&user)
