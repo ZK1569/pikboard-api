@@ -54,10 +54,12 @@ func jsonResponseError(w http.ResponseWriter, err error) error {
 	}
 
 	switch err {
-	case errs.ErrNotFound:
+	case errs.NotFound:
 		return writeJSON(w, http.StatusNotFound, &envelope{Error: "Not found"})
-	case errs.ErrValidation, errs.ErrBadRequest:
+	case errs.Validation, errs.BadRequest:
 		return writeJSON(w, http.StatusBadRequest, &envelope{Error: "Bad Request"})
+	case errs.AlreadyExists:
+		return writeJSON(w, http.StatusBadRequest, &envelope{Error: "Already exists"})
 	default:
 		log.Printf("❌ Error: %v \n", err)
 		return writeJSON(w, http.StatusInternalServerError, &envelope{Error: "Internal error"})

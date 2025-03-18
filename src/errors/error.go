@@ -3,9 +3,10 @@ package errs
 import "errors"
 
 var (
-	ErrNotFound   = errors.New("Resource not found")
-	ErrValidation = errors.New("Validation error")
-	ErrBadRequest = errors.New("Bad Request")
-	ErrDatabase   = errors.New("Database error")
-	ErrInternal   = errors.New("Internal error")
+	NotFound      = errors.New("Resource not found")
+	Validation    = errors.New("Validation error")
+	BadRequest    = errors.New("Bad Request")
+	Database      = errors.New("Database error")
+	Internal      = errors.New("Internal error")
+	AlreadyExists = errors.New("Already exists")
 )
