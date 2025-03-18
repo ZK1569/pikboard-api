@@ -39,6 +39,7 @@
 # Go workspace file
 go.work
 tmp
+servers.json
 
 ### Vim ###
 # Swap

@@ -25,6 +25,7 @@ func main() {
 
 	mux.Route("/v1", func(r chi.Router) {
 		controller.GetHealthInstance().Mount(r)
+		controller.GetAuthentificationInstance().Mount(r)
 	})
 
 	srv := http.Server{

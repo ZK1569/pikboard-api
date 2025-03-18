@@ -17,8 +17,10 @@ func GetHealthInstance() *Health {
 	if singleHealthInstance == nil {
 		lock.Lock()
 		defer lock.Unlock()
-		singleHealthInstance = &Health{
-			path: "/health",
+		if singleHealthInstance == nil {
+			singleHealthInstance = &Health{
+				path: "/health",
+			}
 		}
 	}
 
