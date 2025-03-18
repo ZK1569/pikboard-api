@@ -1,7 +1,6 @@
 package util
 
 type config struct {
-	Port     string
 	Env      string
 	Version  string
 	Database databaseConfig
@@ -19,7 +18,6 @@ var EnvVariable *config
 
 func init() {
 	EnvVariable = &config{
-		Port:    getString("PORT", "8080"),
 		Env:     getString("ENV", "development"),
 		Version: getString("VERSION", "0.0.1"),
 		Database: databaseConfig{
