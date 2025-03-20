@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	errs "github.com/zk1569/pikboard-api/src/errors"
+	model "github.com/zk1569/pikboard-api/src/models"
 	service "github.com/zk1569/pikboard-api/src/services"
 )
 
@@ -39,8 +40,38 @@ func (self *Authentification) Mount(r chi.Router) {
 	})
 }
 
+type LoginBody struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"gte=8,lte=100"`
+}
+
 func (self *Authentification) login(w http.ResponseWriter, r *http.Request) {
-	jsonResponse(w, http.StatusNotImplemented, nil)
+	defer r.Body.Close()
+
+	var bodyLogin LoginBody
+	if err := json.NewDecoder(r.Body).Decode(&bodyLogin); err != nil {
+		log.Printf("Error: body decode %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if err := Validate.Struct(bodyLogin); err != nil {
+		log.Printf("Error: Validation error %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	session_token, err := self.userService.GetUserSession(bodyLogin.Email, bodyLogin.Password)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	type tokenResponse struct {
+		Token string `json:"token"`
+	}
+	jsonResponse(w, http.StatusOK, &tokenResponse{Token: session_token})
+	return
 }
 
 type NewUserBody struct {
@@ -71,6 +102,10 @@ func (self *Authentification) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonResponse(w, http.StatusCreated, user)
+	type userResponse struct {
+		User *model.User `json:"user"`
+	}
+
+	jsonResponse(w, http.StatusCreated, &userResponse{User: user})
 	return
 }

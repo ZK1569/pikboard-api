@@ -33,7 +33,7 @@ func (self *User) CreateUser(username, email string, password [64]byte) (*model.
 	user := model.User{
 		Username: username,
 		Email:    email,
-		Password: []byte{000},
+		Password: password[:],
 	}
 
 	result := self.db.DB.Create(&user)
@@ -45,4 +45,28 @@ func (self *User) CreateUser(username, email string, password [64]byte) (*model.
 	}
 
 	return &user, nil
+}
+
+func (self *User) GetUserByEmailAndPassword(email string, password [64]byte) (*model.User, error) {
+	var user model.User
+
+	result := self.db.DB.First(&user, "email = ? AND password = ?", email, password[:])
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return &user, nil
+}
+
+func (self *User) UpdateUserSession(user *model.User, token string) error {
+	user.Session = &token
+
+	result := self.db.DB.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }

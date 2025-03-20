@@ -9,4 +9,5 @@ var (
 	Database      = errors.New("Database error")
 	Internal      = errors.New("Internal error")
 	AlreadyExists = errors.New("Already exists")
+	Unauthorized  = errors.New("Unauthorized")
 )

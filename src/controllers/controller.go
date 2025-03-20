@@ -60,6 +60,8 @@ func jsonResponseError(w http.ResponseWriter, err error) error {
 		return writeJSON(w, http.StatusBadRequest, &envelope{Error: "Bad Request"})
 	case errs.AlreadyExists:
 		return writeJSON(w, http.StatusBadRequest, &envelope{Error: "Already exists"})
+	case errs.Unauthorized:
+		return writeJSON(w, http.StatusUnauthorized, &envelope{Error: "Unauthorized"})
 	default:
 		log.Printf("❌ Error: %v \n", err)
 		return writeJSON(w, http.StatusInternalServerError, &envelope{Error: "Internal error"})
