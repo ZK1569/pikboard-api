@@ -70,3 +70,65 @@ func (self *User) UpdateUserSession(user *model.User, token string) error {
 	}
 	return nil
 }
+
+func (self *User) GetUserByToken(token string) (*model.User, error) {
+	var user model.User
+
+	result := self.db.DB.First(&user, "session = ? ", token)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return &user, nil
+}
+
+func (self *User) GetUserByID(userID uint) (*model.User, error) {
+	var user model.User
+
+	result := self.db.DB.First(&user, "id = ? ", userID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return &user, nil
+
+}
+
+func (self *User) SearchUsersByUsername(username string) ([]model.User, error) {
+	users := []model.User{}
+
+	result := self.db.DB.Where("username ILIKE ?", "%"+username+"%").Find(&users)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return users, nil
+
+}
+
+func (self *User) UpdateUser(user *model.User) error {
+	result := self.db.DB.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (self *User) UpdatePassword(user *model.User, newPassword [64]byte) error {
+	user.Password = newPassword[:]
+
+	result := self.db.DB.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

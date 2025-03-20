@@ -15,4 +15,9 @@ func init() {
 type UserInterface interface {
 	CreateUser(username, email, password string) (*model.User, error)
 	GetUserSession(email, password string) (string, error)
+	GetUserByID(uint) (*model.User, error)
+	UpdateUser(*model.User) error
+	UpdatePassword(user *model.User, oldPassword, newPassword string) error
+	SearchUsersByUsername(string) ([]model.User, error)
+	GetUserByToken(string) (*model.User, error)
 }
