@@ -84,3 +84,18 @@ func (self *User) GetUserByToken(token string) (*model.User, error) {
 
 	return &user, nil
 }
+
+func (self *User) GetUserByID(userID uint) (*model.User, error) {
+	var user model.User
+
+	result := self.db.DB.First(&user, "id = ? ", userID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return &user, nil
+
+}
