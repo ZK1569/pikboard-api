@@ -39,6 +39,7 @@ func (self *User) Mount(r chi.Router) {
 		r.Get("/", self.getUserByID)
 		r.Get("/self", self.selfInfo)
 		r.Get("/search", self.searchUser)
+		r.Put("/password", self.updatePassword)
 		r.Patch("/", self.updateUser)
 	})
 }
@@ -118,6 +119,38 @@ func (self *User) updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := self.userService.UpdateUser(user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, user)
+}
+
+type UpdatePasswordBody struct {
+	OldPassword string `json:"old_password" validate:"gte=8,lte=100"`
+	NewPassword string `json:"new_password" validate:"gte=8,lte=100"`
+}
+
+func (self *User) updatePassword(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var bodyPassword UpdatePasswordBody
+	if err := json.NewDecoder(r.Body).Decode(&bodyPassword); err != nil {
+		log.Printf("Error: body decode %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if err := Validate.Struct(bodyPassword); err != nil {
+		log.Printf("Error: Validation error %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	user := getUserFromCtx(r)
+
+	err := self.userService.UpdatePassword(user, bodyPassword.OldPassword, bodyPassword.NewPassword)
 	if err != nil {
 		jsonResponseError(w, err)
 		return

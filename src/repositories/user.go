@@ -122,3 +122,13 @@ func (self *User) UpdateUser(user *model.User) error {
 	}
 	return nil
 }
+
+func (self *User) UpdatePassword(user *model.User, newPassword [64]byte) error {
+	user.Password = newPassword[:]
+
+	result := self.db.DB.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
