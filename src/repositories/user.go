@@ -114,3 +114,11 @@ func (self *User) SearchUsersByUsername(username string) ([]model.User, error) {
 	return users, nil
 
 }
+
+func (self *User) UpdateUser(userID uint, user *model.User) error {
+	result := self.db.DB.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

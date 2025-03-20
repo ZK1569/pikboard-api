@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -37,6 +39,7 @@ func (self *User) Mount(r chi.Router) {
 		r.Get("/", self.getUserByID)
 		r.Get("/self", self.selfInfo)
 		r.Get("/search", self.searchUser)
+		r.Patch("/", self.updateUser)
 	})
 }
 
@@ -82,4 +85,43 @@ func (self *User) searchUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusOK, users)
+}
+
+type UpdateUserBody struct {
+	Email string `json:"email" validate:"omitempty,email"`
+	Phone string `json:"phone"`
+}
+
+func (self *User) updateUser(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var bodyUser UpdateUserBody
+	if err := json.NewDecoder(r.Body).Decode(&bodyUser); err != nil {
+		log.Printf("Error: body decode %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if err := Validate.Struct(bodyUser); err != nil {
+		log.Printf("Error: Validation error %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	user := getUserFromCtx(r)
+
+	if bodyUser.Email != "" {
+		user.Email = bodyUser.Email
+	}
+	if bodyUser.Phone != "" {
+		user.Phone = &bodyUser.Phone
+	}
+
+	err := self.userService.UpdateUser(user.ID, user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, user)
 }

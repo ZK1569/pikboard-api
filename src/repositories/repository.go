@@ -17,6 +17,7 @@ type UserInterface interface {
 	GetUserByEmailAndPassword(string, [64]byte) (*model.User, error)
 	GetUserByID(uint) (*model.User, error)
 	SearchUsersByUsername(string) ([]model.User, error)
+	UpdateUser(uint, *model.User) error
 	UpdateUserSession(*model.User, string) error
 	GetUserByToken(string) (*model.User, error)
 }
