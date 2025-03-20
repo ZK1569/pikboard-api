@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -37,6 +36,7 @@ func (self *User) Mount(r chi.Router) {
 		r.Use(GetMiddlewareInstance().AuthTokenMiddleware)
 		r.Get("/", self.getUserByID)
 		r.Get("/self", self.selfInfo)
+		r.Get("/search", self.searchUser)
 	})
 }
 
@@ -47,7 +47,6 @@ func (self *User) selfInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (self *User) getUserByID(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL.Query())
 	userIDstr := r.URL.Query().Get("id")
 	if userIDstr == "" {
 		jsonResponseError(w, errs.BadRequest)
@@ -67,4 +66,20 @@ func (self *User) getUserByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusOK, user)
+}
+
+func (self *User) searchUser(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	users, err := self.userService.SearchUsersByUsername(username)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, users)
 }

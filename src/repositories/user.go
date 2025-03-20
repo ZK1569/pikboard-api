@@ -99,3 +99,18 @@ func (self *User) GetUserByID(userID uint) (*model.User, error) {
 	return &user, nil
 
 }
+
+func (self *User) SearchUsersByUsername(username string) ([]model.User, error) {
+	users := []model.User{}
+
+	result := self.db.DB.Where("username ILIKE ?", "%"+username+"%").Find(&users)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return users, nil
+
+}

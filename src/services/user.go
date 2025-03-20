@@ -61,3 +61,7 @@ func (self *User) GetUserByToken(token string) (*model.User, error) {
 func (self *User) GetUserByID(userID uint) (*model.User, error) {
 	return self.userRepository.GetUserByID(userID)
 }
+
+func (self *User) SearchUsersByUsername(username string) ([]model.User, error) {
+	return self.userRepository.SearchUsersByUsername(username)
+}

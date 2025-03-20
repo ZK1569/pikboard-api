@@ -16,5 +16,6 @@ type UserInterface interface {
 	CreateUser(username, email, password string) (*model.User, error)
 	GetUserSession(email, password string) (string, error)
 	GetUserByID(uint) (*model.User, error)
+	SearchUsersByUsername(string) ([]model.User, error)
 	GetUserByToken(string) (*model.User, error)
 }
