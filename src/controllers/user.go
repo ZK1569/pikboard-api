@@ -117,7 +117,7 @@ func (self *User) updateUser(w http.ResponseWriter, r *http.Request) {
 		user.Phone = &bodyUser.Phone
 	}
 
-	err := self.userService.UpdateUser(user.ID, user)
+	err := self.userService.UpdateUser(user)
 	if err != nil {
 		jsonResponseError(w, err)
 		return

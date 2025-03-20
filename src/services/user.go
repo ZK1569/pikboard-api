@@ -65,6 +65,6 @@ func (self *User) GetUserByID(userID uint) (*model.User, error) {
 func (self *User) SearchUsersByUsername(username string) ([]model.User, error) {
 	return self.userRepository.SearchUsersByUsername(username)
 }
-func (self *User) UpdateUser(userID uint, user *model.User) error {
-	return self.userRepository.UpdateUser(userID, user)
+func (self *User) UpdateUser(user *model.User) error {
+	return self.userRepository.UpdateUser(user)
 }
