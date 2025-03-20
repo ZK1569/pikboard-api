@@ -24,4 +24,7 @@ type UserInterface interface {
 
 type FriendInterface interface {
 	SendFriendRequest(*model.User, uint) (*model.FriendRequest, error)
+	AcceptOrNotFriendRequest(*model.User, uint, bool) error
+	acceptFriendRequest(*model.User, *model.User) error
+	declineFriendRequest(*model.User, *model.User) error
 }

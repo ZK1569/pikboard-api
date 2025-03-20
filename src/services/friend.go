@@ -1,6 +1,8 @@
 package service
 
 import (
+	"log"
+
 	model "github.com/zk1569/pikboard-api/src/models"
 	repository "github.com/zk1569/pikboard-api/src/repositories"
 )
@@ -40,4 +42,54 @@ func (self *Friend) SendFriendRequest(senderUser *model.User, receiverUserID uin
 	}
 
 	return newFriendRequest, nil
+}
+
+func (self *Friend) AcceptOrNotFriendRequest(user *model.User, friend_id uint, answer bool) error {
+	friend, err := self.userRepository.GetUserByID(friend_id)
+	if err != nil {
+		return err
+	}
+
+	if answer {
+		return self.acceptFriendRequest(user, friend)
+	} else {
+		return self.declineFriendRequest(user, friend)
+	}
+}
+
+func (self *Friend) acceptFriendRequest(user *model.User, friend *model.User) error {
+	_, err := self.friendRepository.GetFriendRequest(user.ID, friend.ID)
+	if err != nil {
+		return err
+	}
+
+	user.Friends = append(user.Friends, friend)
+	friend.Friends = append(friend.Friends, user)
+
+	err = self.userRepository.UpdateUser(user)
+	if err != nil {
+		log.Printf("Error will updating user : %d", user.ID)
+		return err
+	}
+	err = self.userRepository.UpdateUser(friend)
+	if err != nil {
+		log.Printf("Error will updating friend : %d", friend.ID)
+		return err
+	}
+
+	err = self.friendRepository.DeleteFriendRequest(user.ID, friend.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (self *Friend) declineFriendRequest(user *model.User, friend *model.User) error {
+	err := self.friendRepository.DeleteFriendRequest(user.ID, friend.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

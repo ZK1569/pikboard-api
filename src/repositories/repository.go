@@ -25,4 +25,6 @@ type UserInterface interface {
 
 type FriendInterface interface {
 	CreateFriendRequest(*model.User, *model.User) (*model.FriendRequest, error)
+	DeleteFriendRequest(uint, uint) error
+	GetFriendRequest(uint, uint) (*model.FriendRequest, error)
 }
