@@ -27,6 +27,7 @@ func main() {
 		controller.GetHealthInstance().Mount(r)
 		controller.GetAuthentificationInstance().Mount(r)
 		controller.GetUserInstance().Mount(r)
+		controller.GetFriendInstance().Mount(r)
 	})
 
 	srv := http.Server{
