@@ -7,5 +7,5 @@ type User struct {
 	Username string  `json:"username" gorm:"unique;not null"`
 	Email    string  `json:"email" gorm:"unique;not null"`
 	Password []byte  `json:"-"`
-	Session  *string `json:"session"`
+	Session  *string `json:"-"`
 }

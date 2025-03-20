@@ -53,3 +53,7 @@ func (self *User) GetUserSession(email, password string) (string, error) {
 
 	return sessionToken, nil
 }
+
+func (self *User) GetUserByToken(token string) (*model.User, error) {
+	return self.userRepository.GetUserByToken(token)
+}

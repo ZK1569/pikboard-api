@@ -70,3 +70,17 @@ func (self *User) UpdateUserSession(user *model.User, token string) error {
 	}
 	return nil
 }
+
+func (self *User) GetUserByToken(token string) (*model.User, error) {
+	var user model.User
+
+	result := self.db.DB.First(&user, "session = ? ", token)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return &user, nil
+}

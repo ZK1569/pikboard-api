@@ -10,12 +10,13 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-playground/validator/v10"
 	errs "github.com/zk1569/pikboard-api/src/errors"
+	model "github.com/zk1569/pikboard-api/src/models"
 )
 
 var (
 	Validate *validator.Validate
 	lock     *sync.Mutex
-	mangaCTX = "manga"
+	userCtx  = "user"
 )
 
 type MangaInterface interface {
@@ -75,6 +76,11 @@ func jsonResponse(w http.ResponseWriter, status int, data any) error {
 	}
 
 	return writeJSON(w, status, &envelope{Data: data})
+}
+
+func getUserFromCtx(r *http.Request) *model.User {
+	user, _ := r.Context().Value(userCtx).(*model.User)
+	return user
 }
 
 func SetupCORS(r chi.Router) {
