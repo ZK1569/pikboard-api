@@ -21,3 +21,7 @@ type UserInterface interface {
 	SearchUsersByUsername(string) ([]model.User, error)
 	GetUserByToken(string) (*model.User, error)
 }
+
+type FriendInterface interface {
+	SendFriendRequest(*model.User, uint) (*model.FriendRequest, error)
+}

@@ -22,3 +22,7 @@ type UserInterface interface {
 	UpdatePassword(user *model.User, newPassword [64]byte) error
 	GetUserByToken(string) (*model.User, error)
 }
+
+type FriendInterface interface {
+	CreateFriendRequest(*model.User, *model.User) (*model.FriendRequest, error)
+}
