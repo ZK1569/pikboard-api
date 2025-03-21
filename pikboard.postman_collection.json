@@ -1,0 +1,562 @@
+{
+	"info": {
+		"_postman_id": "31a168ac-1373-434e-9687-f2e5e82c01dd",
+		"name": "API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38202781"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "✅ Signup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"let responseData = pm.response.json();",
+									"",
+									"pm.collectionVariables.set(\"last_username_created\", responseData.data.user.username);",
+									"pm.collectionVariables.set(\"last_email_created\", responseData.data.user.email);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{$randomUserName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{default_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/signup",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"let responseData = pm.response.json();",
+									"",
+									"pm.collectionVariables.set(\"session_token\", responseData.data.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{last_email_created}}\",\n    \"password\": \"new_password_123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "✅ Get user by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/user?id=44",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "44"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get self informations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/user/self",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user",
+								"self"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "🚫 Get user's history",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/user/history?id=123",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user",
+								"history"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Search user by username",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/user/search?username=talia",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user",
+								"search"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "talia"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get users friends",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/user/friends",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user",
+								"friends"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{$randomEmail}}\",\n    \"phone\": \"{{$randomPhoneNumber}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Update password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\" : \"{{default_password}}\",\n    \"new_password\" : \"new_password_123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/user/password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user",
+								"password"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{session_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Game",
+			"item": [
+				{
+					"name": "🚫 Get current games",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/game/current",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "🚫 Create new game",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/game/new",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "🚫 Get game position from image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/Users/zk/Library/Mobile Documents/com~apple~CloudDocs/Capture d'Ecrant/Capture d’écran 2025-02-10 à 17.51.05.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/game/position",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game",
+								"position"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "🚫  Play a move",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/game?pas encore choisie comment faire=",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game"
+							],
+							"query": [
+								{
+									"key": "pas encore choisie comment faire",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{session_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Friend",
+			"item": [
+				{
+					"name": "✅ Send friend request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/friend/request?id=50",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"friend",
+								"request"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "50"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Accept or not friend request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answer\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/friend/accept?friend_id=52",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"friend",
+								"accept"
+							],
+							"query": [
+								{
+									"key": "friend_id",
+									"value": "52"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{session_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "✅  Health check",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/health",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "session_token",
+			"value": ""
+		},
+		{
+			"key": "last_username_created",
+			"value": ""
+		},
+		{
+			"key": "last_email_created",
+			"value": ""
+		},
+		{
+			"key": "default_password",
+			"value": "password123",
+			"type": "default"
+		}
+	]
+}

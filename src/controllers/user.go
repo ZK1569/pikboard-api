@@ -39,6 +39,7 @@ func (self *User) Mount(r chi.Router) {
 		r.Get("/", self.getUserByID)
 		r.Get("/self", self.selfInfo)
 		r.Get("/search", self.searchUser)
+		r.Get("/friends", self.getUserFriend)
 		r.Put("/password", self.updatePassword)
 		r.Patch("/", self.updateUser)
 	})
@@ -157,4 +158,10 @@ func (self *User) updatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusOK, user)
+}
+
+func (self *User) getUserFriend(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	jsonResponse(w, http.StatusOK, user.Friends)
 }

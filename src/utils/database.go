@@ -60,5 +60,10 @@ func migrate_database(db *gorm.DB) error {
 		return err
 	}
 
+	err = db.AutoMigrate(&model.FriendRequest{})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
