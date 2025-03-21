@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 
+	errs "github.com/zk1569/pikboard-api/src/errors"
 	model "github.com/zk1569/pikboard-api/src/models"
 	repository "github.com/zk1569/pikboard-api/src/repositories"
 )
@@ -30,6 +31,11 @@ func GetFriendInstance() FriendInterface {
 }
 
 func (self *Friend) SendFriendRequest(senderUser *model.User, receiverUserID uint) (*model.FriendRequest, error) {
+
+	isFriend := self.IsFriend(senderUser, receiverUserID)
+	if isFriend {
+		return nil, errs.BadRequest
+	}
 
 	receiverUser, err := self.userRepository.GetUserByID(receiverUserID)
 	if err != nil {
@@ -92,4 +98,14 @@ func (self *Friend) declineFriendRequest(user *model.User, friend *model.User) e
 	}
 
 	return nil
+}
+
+func (self *Friend) IsFriend(user *model.User, friendID uint) bool {
+	for _, i := range user.Friends {
+		if i.ID == friendID {
+			return true
+		}
+	}
+
+	return false
 }

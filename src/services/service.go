@@ -27,4 +27,5 @@ type FriendInterface interface {
 	AcceptOrNotFriendRequest(*model.User, uint, bool) error
 	acceptFriendRequest(*model.User, *model.User) error
 	declineFriendRequest(*model.User, *model.User) error
+	IsFriend(*model.User, uint) bool
 }

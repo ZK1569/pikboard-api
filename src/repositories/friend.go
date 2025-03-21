@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 
 	errs "github.com/zk1569/pikboard-api/src/errors"
 	model "github.com/zk1569/pikboard-api/src/models"
@@ -69,12 +68,10 @@ func (self *Friend) DeleteFriendRequest(user, friend uint) error {
 func (self *Friend) GetFriendRequest(user, friend uint) (*model.FriendRequest, error) {
 	friendRequest := model.FriendRequest{}
 
-	fmt.Printf("user = %d, friend = %d \n", user, friend)
-
 	result := self.db.DB.Where(
 		"requester_id = ? AND receiver_id = ?",
-		user,
 		friend,
+		user,
 	).First(&friendRequest)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {

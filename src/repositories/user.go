@@ -74,7 +74,12 @@ func (self *User) UpdateUserSession(user *model.User, token string) error {
 func (self *User) GetUserByToken(token string) (*model.User, error) {
 	var user model.User
 
-	result := self.db.DB.First(&user, "session = ? ", token)
+	result := self.db.DB.
+		Model(&model.User{}).
+		Preload("Friends").
+		Where("session = ?", token).
+		First(&user)
+
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, errs.NotFound
@@ -88,7 +93,11 @@ func (self *User) GetUserByToken(token string) (*model.User, error) {
 func (self *User) GetUserByID(userID uint) (*model.User, error) {
 	var user model.User
 
-	result := self.db.DB.First(&user, "id = ? ", userID)
+	result := self.db.DB.
+		Model(&model.User{}).
+		Preload("Friends").
+		Where("id = ?", userID).
+		First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, errs.NotFound

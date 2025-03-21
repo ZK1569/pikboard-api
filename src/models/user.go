@@ -9,5 +9,5 @@ type User struct {
 	Phone    *string `json:"phone"`
 	Password []byte  `json:"-"`
 	Session  *string `json:"-"`
-	Friends  []*User `gorm:"many2many:user_friends;joinForeignKey:UserID;JoinReferences:FriendID"`
+	Friends  []*User `json:"friends" gorm:"many2many:user_friends;joinForeignKey:UserID;JoinReferences:FriendID"`
 }

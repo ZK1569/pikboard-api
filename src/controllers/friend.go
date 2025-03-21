@@ -59,6 +59,11 @@ func (self *Friend) sendFriendRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	receiverUserID := uint(userID64)
 
+	if user.ID == receiverUserID {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
 	_, err = self.friendService.SendFriendRequest(user, receiverUserID)
 	if err != nil {
 		jsonResponseError(w, err)
