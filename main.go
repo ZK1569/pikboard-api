@@ -28,6 +28,7 @@ func main() {
 		controller.GetAuthentificationInstance().Mount(r)
 		controller.GetUserInstance().Mount(r)
 		controller.GetFriendInstance().Mount(r)
+		controller.GetChessInstance().Mount(r)
 	})
 
 	srv := http.Server{

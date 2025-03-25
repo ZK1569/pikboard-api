@@ -10,4 +10,7 @@ var (
 	Internal      = errors.New("Internal error")
 	AlreadyExists = errors.New("Already exists")
 	Unauthorized  = errors.New("Unauthorized")
+
+	ClientResponseNoOK = errors.New("External api response not OK")
+	ClientNotRightType = errors.New("External api response not correct type")
 )
