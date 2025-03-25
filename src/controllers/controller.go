@@ -60,7 +60,7 @@ func jsonResponseError(w http.ResponseWriter, err error) error {
 	case errs.Validation, errs.BadRequest:
 		return writeJSON(w, http.StatusBadRequest, &envelope{Error: "Bad Request"})
 	case errs.AlreadyExists:
-		return writeJSON(w, http.StatusBadRequest, &envelope{Error: "Already exists"})
+		return writeJSON(w, http.StatusConflict, &envelope{Error: "Already exists"})
 	case errs.Unauthorized:
 		return writeJSON(w, http.StatusUnauthorized, &envelope{Error: "Unauthorized"})
 	default:
