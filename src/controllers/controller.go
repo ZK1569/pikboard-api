@@ -38,6 +38,13 @@ func writeJSON(w http.ResponseWriter, status int, data any) error {
 	return json.NewEncoder(w).Encode(data)
 }
 
+func writeImage(w http.ResponseWriter, status int, data []byte) error {
+	w.Header().Set("Content-type", "image/png")
+	w.WriteHeader(status)
+	_, err := w.Write(data)
+	return err
+}
+
 func readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1_048_578 // 1 Mb
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
@@ -76,6 +83,11 @@ func jsonResponse(w http.ResponseWriter, status int, data any) error {
 	}
 
 	return writeJSON(w, status, &envelope{Data: data})
+}
+
+// INFO: Useless but good for code consistency
+func imageResponse(w http.ResponseWriter, status int, data []byte) error {
+	return writeImage(w, status, data)
 }
 
 func getUserFromCtx(r *http.Request) *model.User {

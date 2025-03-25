@@ -29,3 +29,7 @@ type FriendInterface interface {
 	declineFriendRequest(*model.User, *model.User) error
 	IsFriend(*model.User, uint) bool
 }
+
+type ChessInterface interface {
+	FemToImage(string, bool) ([]byte, error)
+}
