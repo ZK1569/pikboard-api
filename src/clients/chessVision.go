@@ -1,7 +1,10 @@
 package client
 
 import (
+	"bytes"
 	"fmt"
+	"image"
+	"image/png"
 	"io"
 	"log"
 	"net/http"
@@ -60,4 +63,25 @@ func (self *ChessVision) FemToImage(fem string, isWhitePov bool) ([]byte, error)
 	}
 
 	return imageData, nil
+}
+
+func (self *ChessVision) CropImage(imgFull []byte) ([]byte, error) {
+
+	img, err := png.Decode(bytes.NewReader(imgFull))
+	if err != nil {
+		return nil, errs.ImageCropError
+	}
+
+	cropRect := image.Rect(0, 0, 600, 600)
+	croppedImg := img.(interface {
+		SubImage(r image.Rectangle) image.Image
+	}).SubImage(cropRect)
+
+	var buf bytes.Buffer
+	err = png.Encode(&buf, croppedImg)
+	if err != nil {
+		return nil, errs.ImageCropError
+	}
+
+	return buf.Bytes(), nil
 }

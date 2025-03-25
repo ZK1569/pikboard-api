@@ -10,4 +10,5 @@ func init() {
 
 type ChessImage interface {
 	FemToImage(string, bool) ([]byte, error)
+	CropImage([]byte) ([]byte, error)
 }

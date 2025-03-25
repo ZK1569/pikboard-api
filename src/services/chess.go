@@ -32,7 +32,14 @@ func (self *Chess) FemToImage(fem string, isWhitePOV bool) ([]byte, error) {
 
 	if errors.Is(err, errs.ClientResponseNoOK) {
 		return chessImage, errs.BadRequest
+	} else if err != nil {
+		return nil, err
 	}
 
-	return chessImage, err
+	cropImage, err := self.chessImageClient.CropImage(chessImage)
+	if err != nil {
+		return nil, err
+	}
+
+	return cropImage, err
 }
