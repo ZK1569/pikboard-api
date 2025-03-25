@@ -520,6 +520,42 @@
 			]
 		},
 		{
+			"name": "Chess",
+			"item": [
+				{
+					"name": "✅ FEM to image",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/chess?q=r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"chess"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1"
+								},
+								{
+									"key": "pov",
+									"value": "black",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "✅  Health check",
 			"request": {
 				"auth": {
