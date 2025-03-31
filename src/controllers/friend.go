@@ -38,6 +38,8 @@ func GetFriendInstance() *Friend {
 func (self *Friend) Mount(r chi.Router) {
 	r.Route(self.path, func(r chi.Router) {
 		r.Use(GetMiddlewareInstance().AuthTokenMiddleware)
+		r.Get("/request", self.getPendingFriendRequest)
+		r.Get("/sent", self.getSentFriendRequest)
 		r.Post("/request", self.sendFriendRequest)
 		r.Post("/accept", self.acceptFriendRequest)
 	})
@@ -114,4 +116,28 @@ func (self *Friend) acceptFriendRequest(w http.ResponseWriter, r *http.Request) 
 	}
 
 	jsonResponse(w, http.StatusOK, nil)
+}
+
+func (self *Friend) getPendingFriendRequest(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	users, err := self.friendService.GetPendingFriendRequest(user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, users)
+}
+
+func (self *Friend) getSentFriendRequest(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	users, err := self.friendService.GetSentFriendRequest(user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, users)
 }

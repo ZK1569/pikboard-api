@@ -81,3 +81,45 @@ func (self *Friend) GetFriendRequest(user, friend uint) (*model.FriendRequest, e
 
 	return &friendRequest, nil
 }
+
+func (self *Friend) GetPendingFriendRequest(userID uint) ([]model.FriendRequest, error) {
+	friendRequests := []model.FriendRequest{}
+
+	result := self.db.DB.Model(&model.FriendRequest{}).
+		Preload("Receiver").
+		Preload("Requester").
+		Where(
+			"receiver_id = ?",
+			userID,
+		).
+		Find(&friendRequests)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return friendRequests, nil
+}
+
+func (self *Friend) GetSentFriendRequest(userID uint) ([]model.FriendRequest, error) {
+	friendRequests := []model.FriendRequest{}
+
+	result := self.db.DB.Model(&model.FriendRequest{}).
+		Preload("Receiver").
+		Preload("Requester").
+		Where(
+			"requester_id = ?",
+			userID,
+		).
+		Find(&friendRequests)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return friendRequests, nil
+}

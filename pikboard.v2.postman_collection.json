@@ -83,7 +83,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"{{last_email_created}}\",\n    \"password\": \"new_password_123\"\n}",
+							"raw": "{\n    \"email\": \"{{last_email_created}}\",\n    \"password\": \"{{default_password}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -262,6 +262,34 @@
 							"path": [
 								"user",
 								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Update profile image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "profile_image",
+									"type": "file",
+									"src": "postman-cloud:///1f00dcbc-d8ff-4050-bc38-74fef634727a"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/user/image",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user",
+								"image"
 							]
 						}
 					},
@@ -480,6 +508,42 @@
 									"key": "friend_id",
 									"value": "52"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get pending friend requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/friend/request",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"friend",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get friend requests sent",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/friend/sent",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"friend",
+								"sent"
 							]
 						}
 					},
