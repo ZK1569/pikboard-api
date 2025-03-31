@@ -29,6 +29,9 @@ type FriendInterface interface {
 	acceptFriendRequest(*model.User, *model.User) error
 	declineFriendRequest(*model.User, *model.User) error
 	IsFriend(*model.User, uint) bool
+
+	GetPendingFriendRequest(*model.User) ([]model.User, error)
+	GetSentFriendRequest(*model.User) ([]model.User, error)
 }
 
 type ChessInterface interface {

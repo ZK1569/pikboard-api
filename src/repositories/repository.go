@@ -27,6 +27,9 @@ type FriendInterface interface {
 	CreateFriendRequest(*model.User, *model.User) (*model.FriendRequest, error)
 	DeleteFriendRequest(uint, uint) error
 	GetFriendRequest(uint, uint) (*model.FriendRequest, error)
+
+	GetPendingFriendRequest(uint) ([]model.FriendRequest, error)
+	GetSentFriendRequest(uint) ([]model.FriendRequest, error)
 }
 
 type ImageInterface interface {

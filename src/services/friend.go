@@ -109,3 +109,32 @@ func (self *Friend) IsFriend(user *model.User, friendID uint) bool {
 
 	return false
 }
+
+func (self *Friend) GetPendingFriendRequest(user *model.User) ([]model.User, error) {
+	friendRequests, err := self.friendRepository.GetPendingFriendRequest(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	users := []model.User{}
+
+	for _, request := range friendRequests {
+		users = append(users, request.Requester)
+	}
+
+	return users, nil
+}
+
+func (self *Friend) GetSentFriendRequest(user *model.User) ([]model.User, error) {
+	friendSenderd, err := self.friendRepository.GetSentFriendRequest(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	users := []model.User{}
+	for _, request := range friendSenderd {
+		users = append(users, request.Receiver)
+	}
+
+	return users, nil
+}
