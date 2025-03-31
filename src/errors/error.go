@@ -14,4 +14,6 @@ var (
 	ClientResponseNoOK = errors.New("External api response not OK")
 	ClientNotRightType = errors.New("External api response not correct type")
 	ImageCropError     = errors.New("Error will croping image")
+
+	S3Error = errors.New("Error with the S3")
 )

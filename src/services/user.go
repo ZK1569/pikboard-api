@@ -11,7 +11,8 @@ import (
 )
 
 type User struct {
-	userRepository repository.UserInterface
+	userRepository  repository.UserInterface
+	imageRepository repository.ImageInterface
 }
 
 var singleUserInstance UserInterface
@@ -22,7 +23,8 @@ func GetUserInstance() UserInterface {
 		defer lock.Unlock()
 		if singleUserInstance == nil {
 			singleUserInstance = &User{
-				userRepository: repository.GetUserInstance(),
+				userRepository:  repository.GetUserInstance(),
+				imageRepository: repository.GetImageInstance(),
 			}
 		}
 	}
@@ -66,6 +68,7 @@ func (self *User) GetUserByID(userID uint) (*model.User, error) {
 func (self *User) SearchUsersByUsername(username string) ([]model.User, error) {
 	return self.userRepository.SearchUsersByUsername(username)
 }
+
 func (self *User) UpdateUser(user *model.User) error {
 	return self.userRepository.UpdateUser(user)
 }
@@ -80,6 +83,21 @@ func (self *User) UpdatePassword(user *model.User, oldPassword, newPassword stri
 	newPasswordHash := sha512.Sum512([]byte(newPassword))
 
 	err := self.userRepository.UpdatePassword(user, newPasswordHash)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (self *User) UpdateProfileImage(user *model.User, img []byte, extension string) error {
+	url, err := self.imageRepository.UploadImage(user.Username, img, extension)
+	if err != nil {
+		return err
+	}
+
+	user.Image = url
+	err = self.userRepository.UpdateUser(user)
 	if err != nil {
 		return err
 	}

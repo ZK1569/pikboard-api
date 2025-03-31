@@ -2,9 +2,12 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	errs "github.com/zk1569/pikboard-api/src/errors"
@@ -41,6 +44,7 @@ func (self *User) Mount(r chi.Router) {
 		r.Get("/search", self.searchUser)
 		r.Get("/friends", self.getUserFriend)
 		r.Put("/password", self.updatePassword)
+		r.Post("/image", self.updateProfileImage)
 		r.Patch("/", self.updateUser)
 	})
 }
@@ -164,4 +168,47 @@ func (self *User) getUserFriend(w http.ResponseWriter, r *http.Request) {
 	user := getUserFromCtx(r)
 
 	jsonResponse(w, http.StatusOK, user.Friends)
+}
+
+func (self *User) updateProfileImage(w http.ResponseWriter, r *http.Request) {
+
+	user := getUserFromCtx(r)
+
+	err := r.ParseMultipartForm(100 << 20)
+
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	file, handler, err := r.FormFile("profile_image")
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+	defer file.Close()
+
+	fmt.Printf("Fichier reçu : %s (%d bytes) \n", handler.Filename, handler.Size)
+
+	namesplit := strings.Split(handler.Filename, ".")
+	file_extension := namesplit[len(namesplit)-1]
+
+	if file_extension == "jpg" || file_extension == "png" {
+		imageData, err := io.ReadAll(file)
+		if err != nil {
+			jsonResponseError(w, err)
+			return
+		}
+
+		err = self.userService.UpdateProfileImage(user, imageData, file_extension)
+		if err != nil {
+			jsonResponseError(w, err)
+			return
+		}
+
+		jsonResponse(w, http.StatusOK, nil)
+		return
+	}
+
+	jsonResponseError(w, errs.BadRequest)
 }
