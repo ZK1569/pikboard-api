@@ -34,6 +34,7 @@ func (self *User) CreateUser(username, email string, password [64]byte) (*model.
 		Username: username,
 		Email:    email,
 		Password: password[:],
+		Image:    "https://pikboard.s3.eu-west-1.amazonaws.com/profile_image/default_profile_image.jpg",
 	}
 
 	result := self.db.DB.Create(&user)

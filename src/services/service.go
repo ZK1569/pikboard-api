@@ -20,6 +20,7 @@ type UserInterface interface {
 	UpdatePassword(user *model.User, oldPassword, newPassword string) error
 	SearchUsersByUsername(string) ([]model.User, error)
 	GetUserByToken(string) (*model.User, error)
+	UpdateProfileImage(*model.User, []byte, string) error
 }
 
 type FriendInterface interface {

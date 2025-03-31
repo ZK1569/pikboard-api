@@ -4,6 +4,7 @@ type config struct {
 	Env      string
 	Version  string
 	Database databaseConfig
+	S3       s3Config
 }
 
 type databaseConfig struct {
@@ -12,6 +13,13 @@ type databaseConfig struct {
 	Password string
 	Host     string
 	Port     string
+}
+
+type s3Config struct {
+	AccessKey       string
+	SecretAccessKey string
+	Region          string
+	BucketName      string
 }
 
 var EnvVariable *config
@@ -26,6 +34,12 @@ func init() {
 			Password: getString("DB_PASSWORD", ""),
 			Host:     getString("DB_HOST", ""),
 			Port:     getString("DB_PORT", ""),
+		},
+		S3: s3Config{
+			AccessKey:       getString("AWS_ACCESS_KEY", ""),
+			SecretAccessKey: getString("AWS_SECRET_ACCESS_KEY", ""),
+			Region:          getString("AWS_REGION", ""),
+			BucketName:      getString("AWS_BUCKET_NAME", ""),
 		},
 	}
 

@@ -28,3 +28,7 @@ type FriendInterface interface {
 	DeleteFriendRequest(uint, uint) error
 	GetFriendRequest(uint, uint) (*model.FriendRequest, error)
 }
+
+type ImageInterface interface {
+	UploadImage(string, []byte, string) (string, error)
+}
