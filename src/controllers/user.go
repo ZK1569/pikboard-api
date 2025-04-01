@@ -174,13 +174,6 @@ func (self *User) updateProfileImage(w http.ResponseWriter, r *http.Request) {
 
 	user := getUserFromCtx(r)
 
-	err := r.ParseMultipartForm(100 << 20)
-
-	if err != nil {
-		jsonResponseError(w, err)
-		return
-	}
-
 	file, handler, err := r.FormFile("profile_image")
 	if err != nil {
 		jsonResponseError(w, err)

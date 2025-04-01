@@ -41,13 +41,6 @@ func (self *Game) Mount(r chi.Router) {
 
 func (self *Game) getPossitionFromImg(w http.ResponseWriter, r *http.Request) {
 
-	err := r.ParseMultipartForm(100 << 20)
-
-	if err != nil {
-		jsonResponseError(w, err)
-		return
-	}
-
 	file, handler, err := r.FormFile("img")
 	if err != nil {
 		jsonResponseError(w, err)
