@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -171,6 +173,30 @@ func (self *User) getUserFriend(w http.ResponseWriter, r *http.Request) {
 }
 
 func (self *User) updateProfileImage(w http.ResponseWriter, r *http.Request) {
+
+	// Affichage d'informations générales sur la requête
+	fmt.Printf("Méthode: %s\n", r.Method)
+	fmt.Printf("URL: %s\n", r.URL.String())
+	fmt.Printf("Remote Addr: %s\n", r.RemoteAddr)
+	fmt.Println("Headers:")
+	for key, values := range r.Header {
+		fmt.Printf("  %s: %v\n", key, values)
+	}
+
+	var bodyBytes []byte
+	if r.Body != nil {
+		var err error
+		bodyBytes, err = io.ReadAll(r.Body)
+		if err != nil {
+			fmt.Printf("Erreur lors de la lecture du body: %v\n", err)
+		} else {
+			// Conversion du body en base64
+			base64Body := base64.StdEncoding.EncodeToString(bodyBytes)[:3500]
+			fmt.Printf("Body en base64: %s\n", base64Body)
+		}
+		// Réaffecter le body pour ne pas perturber la suite (ex: r.FormFile)
+		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	}
 
 	user := getUserFromCtx(r)
 
