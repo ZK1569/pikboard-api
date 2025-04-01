@@ -34,4 +34,11 @@ type FriendInterface interface {
 
 type ImageInterface interface {
 	UploadImage(string, []byte, string) (string, error)
+	UploadForChat(string, []byte) (string, error)
 }
+
+type IAInterface interface {
+	ImageToFem(string) (string, error)
+}
+
+type GameRepository interface{}

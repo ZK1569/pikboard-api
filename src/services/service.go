@@ -37,3 +37,7 @@ type FriendInterface interface {
 type ChessInterface interface {
 	FemToImage(string, bool) ([]byte, error)
 }
+
+type GameInterface interface {
+	ImageToFem([]byte) (string, error)
+}

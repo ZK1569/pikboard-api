@@ -46,5 +46,21 @@ func (self *Image) UploadImage(fileName string, img []byte, ext string) (string,
 
 	publicURL := fmt.Sprintf("https://pikboard.s3.eu-west-1.amazonaws.com/profile_image/%s.%s", fileName, ext)
 	return publicURL, nil
+}
+
+func (self *Image) UploadForChat(name string, img []byte) (string, error) {
+	bodyReader := bytes.NewReader(img)
+
+	_, err := self.s3Client.Client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(util.EnvVariable.S3.BucketName),
+		Key:    aws.String("chat/" + name + ".png"),
+		Body:   bodyReader,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	publicURL := fmt.Sprintf("https://pikboard.s3.eu-west-1.amazonaws.com/chat/%s.%s", name, "png")
+	return publicURL, nil
 
 }

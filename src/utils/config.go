@@ -5,6 +5,7 @@ type config struct {
 	Version  string
 	Database databaseConfig
 	S3       s3Config
+	Ai       aiConfig
 }
 
 type databaseConfig struct {
@@ -20,6 +21,10 @@ type s3Config struct {
 	SecretAccessKey string
 	Region          string
 	BucketName      string
+}
+
+type aiConfig struct {
+	OpenAiKey string
 }
 
 var EnvVariable *config
@@ -40,6 +45,9 @@ func init() {
 			SecretAccessKey: getString("AWS_SECRET_ACCESS_KEY", ""),
 			Region:          getString("AWS_REGION", ""),
 			BucketName:      getString("AWS_BUCKET_NAME", ""),
+		},
+		Ai: aiConfig{
+			OpenAiKey: getString("OPENAI_KEY", ""),
 		},
 	}
 
