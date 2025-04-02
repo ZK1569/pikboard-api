@@ -38,7 +38,7 @@ func GetDatabasePostgresInstance() *DatabasePostgres {
 				log.Fatalf("%s - ❌ An error occurred when connecting to the database: %s", errs.Database, err)
 			}
 
-			err = migrate_database(db)
+			err = migrateDatabase(db)
 			if err != nil {
 				log.Fatalf("%s - ❌ An error occureed during migrations: %s", errs.Database, err)
 			}
@@ -52,7 +52,7 @@ func GetDatabasePostgresInstance() *DatabasePostgres {
 	return singleInstance
 }
 
-func migrate_database(db *gorm.DB) error {
+func migrateDatabase(db *gorm.DB) error {
 	log.Printf(" ⚙️ Start migrations ...")
 	err := db.AutoMigrate(&model.User{})
 
@@ -63,6 +63,40 @@ func migrate_database(db *gorm.DB) error {
 	err = db.AutoMigrate(&model.FriendRequest{})
 	if err != nil {
 		return err
+	}
+
+	err = db.AutoMigrate(&model.Game{})
+	if err != nil {
+		return err
+	}
+	err = migrateStatus(db)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func migrateStatus(db *gorm.DB) error {
+
+	var count int64
+	if err := db.Model(&model.Status{}).Count(&count).Error; err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil
+	}
+
+	statusesName := []string{model.StatusPending, model.StatusPlaying, model.StatusEnd}
+	statuses := make([]model.Status, len(statusesName))
+
+	for i, name := range statusesName {
+		statuses[i] = model.Status{Status: name}
+	}
+
+	result := db.Create(&statuses)
+	if result.Error != nil {
+		return result.Error
 	}
 
 	return nil
