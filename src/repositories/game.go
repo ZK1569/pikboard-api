@@ -58,3 +58,36 @@ func (self *Game) GetUsersGame(userID uint) ([]model.Game, error) {
 
 	return games, nil
 }
+
+func (self *Game) GetById(gameID uint) (*model.Game, error) {
+	var game model.Game
+
+	result := self.db.DB.Model(&model.Game{}).Preload("User").Preload("Opponent").Preload("Status").Where("id = ?", gameID).First(&game)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound
+		}
+		return nil, result.Error
+	}
+
+	return &game, nil
+}
+
+func (self *Game) DeleteGame(gameID uint) error {
+	game := model.Game{}
+
+	result := self.db.DB.Where("id = ?", gameID).Delete(&game)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (self *Game) Update(game *model.Game) error {
+	result := self.db.DB.Save(&game)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

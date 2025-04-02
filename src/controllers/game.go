@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -40,6 +41,7 @@ func (self *Game) Mount(r chi.Router) {
 	r.Route(self.path, func(r chi.Router) {
 		r.Use(GetMiddlewareInstance().AuthTokenMiddleware)
 		r.Get("/current", self.getCurrentGames)
+		r.Post("/accept", self.acceptOrNotGame)
 		r.Post("/position", self.getPossitionFromImg)
 		r.Post("/new", self.createNewGame)
 	})
@@ -120,7 +122,7 @@ func (self *Game) createNewGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonResponse(w, http.StatusOK, nil)
+	jsonResponse(w, http.StatusCreated, nil)
 }
 
 func (self *Game) getCurrentGames(w http.ResponseWriter, r *http.Request) {
@@ -133,4 +135,47 @@ func (self *Game) getCurrentGames(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusOK, games)
+}
+
+type AcceptOrNotGameBody struct {
+	Answer bool `json:"answer" validate:"required"`
+}
+
+func (self *Game) acceptOrNotGame(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	user := getUserFromCtx(r)
+
+	gameIDstr := r.URL.Query().Get("g")
+	if gameIDstr == "" {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+	gameID64, err := strconv.ParseInt(gameIDstr, 10, 32)
+	if err != nil {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+	gameID := uint(gameID64)
+
+	var bodyAnswer AcceptOrNotGameBody
+	if err := json.NewDecoder(r.Body).Decode(&bodyAnswer); err != nil {
+		log.Printf("Error: body decode %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if err := Validate.Struct(bodyAnswer); err != nil {
+		log.Printf("Error: Validation error %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	err = self.gameService.AcceptOrNotGame(gameID, user, bodyAnswer.Answer)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, nil)
 }

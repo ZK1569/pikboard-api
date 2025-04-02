@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/google/uuid"
+	errs "github.com/zk1569/pikboard-api/src/errors"
 	model "github.com/zk1569/pikboard-api/src/models"
 	repository "github.com/zk1569/pikboard-api/src/repositories"
 )
@@ -76,4 +77,37 @@ func (self *Game) GetUsersCurrentGame(user *model.User) ([]model.Game, error) {
 	}
 
 	return currentGames, nil
+}
+
+func (self *Game) AcceptOrNotGame(gameID uint, user *model.User, answer bool) error {
+	game, err := self.gameRepository.GetById(gameID)
+	if err != nil {
+		return err
+	}
+
+	if game.Opponent.ID != user.ID {
+		return errs.Unauthorized
+	}
+
+	if answer {
+		return self.acceptGameRequest(game)
+	} else {
+		return self.declineGameRequest(game)
+	}
+}
+
+func (self *Game) acceptGameRequest(game *model.Game) error {
+
+	status, err := self.statusRepository.GetByStatus(model.StatusPlaying)
+	if err != nil {
+		return err
+	}
+
+	game.Status = *status
+
+	return self.gameRepository.Update(game)
+}
+
+func (self *Game) declineGameRequest(game *model.Game) error {
+	return self.gameRepository.DeleteGame(game.ID)
 }

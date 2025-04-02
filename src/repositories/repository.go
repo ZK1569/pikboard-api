@@ -44,6 +44,9 @@ type IAInterface interface {
 type GameInterface interface {
 	CreateGame(uint, uint, string, uint) (*model.Game, error)
 	GetUsersGame(uint) ([]model.Game, error)
+	GetById(uint) (*model.Game, error)
+	DeleteGame(uint) error
+	Update(*model.Game) error
 }
 
 type StatusInterface interface {
