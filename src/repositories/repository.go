@@ -41,4 +41,13 @@ type IAInterface interface {
 	ImageToFem(string) (string, error)
 }
 
-type GameRepository interface{}
+type GameInterface interface {
+	CreateGame(uint, uint, string, uint) (*model.Game, error)
+	GetUsersGame(uint) ([]model.Game, error)
+}
+
+type StatusInterface interface {
+	CreateStatus(string) (*model.Status, error)
+	GetById(uint) (*model.Status, error)
+	GetByStatus(string) (*model.Status, error)
+}

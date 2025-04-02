@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 
@@ -13,6 +15,7 @@ import (
 type Game struct {
 	path        string
 	gameService service.GameInterface
+	userService service.UserInterface
 }
 
 var singleGameInstance *Game
@@ -25,6 +28,7 @@ func GetGameInsance() *Game {
 			singleGameInstance = &Game{
 				path:        "/game",
 				gameService: service.GetGameInsance(),
+				userService: service.GetUserInstance(),
 			}
 		}
 	}
@@ -35,12 +39,13 @@ func GetGameInsance() *Game {
 func (self *Game) Mount(r chi.Router) {
 	r.Route(self.path, func(r chi.Router) {
 		r.Use(GetMiddlewareInstance().AuthTokenMiddleware)
+		r.Get("/current", self.getCurrentGames)
 		r.Post("/position", self.getPossitionFromImg)
+		r.Post("/new", self.createNewGame)
 	})
 }
 
 func (self *Game) getPossitionFromImg(w http.ResponseWriter, r *http.Request) {
-
 	file, handler, err := r.FormFile("img")
 	if err != nil {
 		jsonResponseError(w, err)
@@ -73,4 +78,59 @@ func (self *Game) getPossitionFromImg(w http.ResponseWriter, r *http.Request) {
 
 	jsonResponseError(w, errs.BadRequest)
 
+}
+
+type NewGameBody struct {
+	Fem        string `json:"fem" validate:"gte=5"`
+	OpponentID uint   `json:"opponent_id"`
+}
+
+func (self *Game) createNewGame(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	defer r.Body.Close()
+
+	var bodyGame NewGameBody
+	if err := json.NewDecoder(r.Body).Decode(&bodyGame); err != nil {
+		log.Printf("Error: body decode %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if err := Validate.Struct(bodyGame); err != nil {
+		log.Printf("Error: Validation error %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if user.ID == bodyGame.OpponentID {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	opponent, err := self.userService.GetUserByID(bodyGame.OpponentID)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	_, err = self.gameService.CreateGame(user, opponent, bodyGame.Fem)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, nil)
+}
+
+func (self *Game) getCurrentGames(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	games, err := self.gameService.GetUsersCurrentGame(user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, games)
 }
