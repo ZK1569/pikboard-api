@@ -138,7 +138,7 @@ func (self *Game) getCurrentGames(w http.ResponseWriter, r *http.Request) {
 }
 
 type AcceptOrNotGameBody struct {
-	Answer bool `json:"answer" validate:"required"`
+	Answer bool `json:"answer"`
 }
 
 func (self *Game) acceptOrNotGame(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (self *Game) acceptOrNotGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = self.gameService.AcceptOrNotGame(gameID, user, bodyAnswer.Answer)
+	err = self.gameService.AcceptOrNotGame(gameID, user, bodyAnswer.Answer || false)
 	if err != nil {
 		jsonResponseError(w, err)
 		return
