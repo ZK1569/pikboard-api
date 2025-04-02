@@ -60,3 +60,20 @@ func (self *Game) CreateGame(owner *model.User, opponent *model.User, fem string
 
 	return game, nil
 }
+
+func (self *Game) GetUsersCurrentGame(user *model.User) ([]model.Game, error) {
+	var currentGames []model.Game
+
+	games, err := self.gameRepository.GetUsersGame(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, game := range games {
+		if game.Status.Status == model.StatusPlaying {
+			currentGames = append(currentGames, game)
+		}
+	}
+
+	return currentGames, nil
+}

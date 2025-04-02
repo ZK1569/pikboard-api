@@ -39,6 +39,7 @@ func GetGameInsance() *Game {
 func (self *Game) Mount(r chi.Router) {
 	r.Route(self.path, func(r chi.Router) {
 		r.Use(GetMiddlewareInstance().AuthTokenMiddleware)
+		r.Get("/current", self.getCurrentGames)
 		r.Post("/position", self.getPossitionFromImg)
 		r.Post("/new", self.createNewGame)
 	})
@@ -102,6 +103,11 @@ func (self *Game) createNewGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.ID == bodyGame.OpponentID {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
 	opponent, err := self.userService.GetUserByID(bodyGame.OpponentID)
 	if err != nil {
 		jsonResponseError(w, err)
@@ -115,4 +121,16 @@ func (self *Game) createNewGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusOK, nil)
+}
+
+func (self *Game) getCurrentGames(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	games, err := self.gameService.GetUsersCurrentGame(user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, games)
 }

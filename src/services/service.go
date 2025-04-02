@@ -41,4 +41,5 @@ type ChessInterface interface {
 type GameInterface interface {
 	ImageToFem([]byte) (string, error)
 	CreateGame(*model.User, *model.User, string) (*model.Game, error)
+	GetUsersCurrentGame(*model.User) ([]model.Game, error)
 }

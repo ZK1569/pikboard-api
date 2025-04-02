@@ -43,6 +43,7 @@ type IAInterface interface {
 
 type GameInterface interface {
 	CreateGame(uint, uint, string, uint) (*model.Game, error)
+	GetUsersGame(uint) ([]model.Game, error)
 }
 
 type StatusInterface interface {

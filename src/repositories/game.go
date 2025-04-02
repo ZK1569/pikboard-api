@@ -47,3 +47,14 @@ func (self *Game) CreateGame(ownerID uint, opponentID uint, fem string, statusID
 
 	return &game, nil
 }
+
+func (self *Game) GetUsersGame(userID uint) ([]model.Game, error) {
+	var games []model.Game
+
+	r := self.db.DB.Where("user_id = ? or opponent_id = ?", userID, userID).Preload("User").Preload("Opponent").Preload("Status").Find(&games)
+	if r.Error != nil {
+		return nil, r.Error
+	}
+
+	return games, nil
+}
