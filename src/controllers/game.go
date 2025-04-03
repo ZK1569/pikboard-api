@@ -43,6 +43,7 @@ func (self *Game) Mount(r chi.Router) {
 		r.Get("/current", self.getCurrentGames)
 		r.Get("/request", self.getRequestedGames)
 		r.Get("/end", self.getEndedGames)
+		r.Post("/end", self.endGame)
 		r.Post("/accept", self.acceptOrNotGame)
 		r.Post("/position", self.getPossitionFromImg)
 		r.Post("/new", self.createNewGame)
@@ -200,6 +201,48 @@ func (self *Game) acceptOrNotGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = self.gameService.AcceptOrNotGame(gameID, user, bodyAnswer.Answer || false)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, nil)
+}
+
+type EndGameBody struct {
+	GameID   int `json:"game_id" validate:"required"`
+	WinnerID int `json:"winner_id" validate:"required"`
+}
+
+func (self *Game) endGame(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	user := getUserFromCtx(r)
+
+	var gameBody EndGameBody
+	if err := json.NewDecoder(r.Body).Decode(&gameBody); err != nil {
+		log.Printf("Error: body decode %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if err := Validate.Struct(gameBody); err != nil {
+		log.Printf("Error: Validation error %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	isOwner, err := self.gameService.IsUserOwner(user, uint(gameBody.GameID))
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+	if !isOwner {
+		jsonResponseError(w, errs.Unauthorized)
+		return
+	}
+
+	err = self.gameService.EndGame(uint(gameBody.GameID), uint(gameBody.WinnerID))
 	if err != nil {
 		jsonResponseError(w, err)
 		return

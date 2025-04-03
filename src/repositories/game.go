@@ -52,7 +52,7 @@ func (self *Game) CreateGame(ownerID uint, opponentID uint, whitePlayerID uint, 
 func (self *Game) GetUsersGame(userID uint) ([]model.Game, error) {
 	var games []model.Game
 
-	r := self.db.DB.Where("user_id = ? or opponent_id = ?", userID, userID).Preload("User").Preload("Opponent").Preload("Status").Find(&games)
+	r := self.db.DB.Where("user_id = ? or opponent_id = ?", userID, userID).Preload("User").Preload("Opponent").Preload("Status").Preload("Winner").Find(&games)
 	if r.Error != nil {
 		return nil, r.Error
 	}
@@ -63,7 +63,7 @@ func (self *Game) GetUsersGame(userID uint) ([]model.Game, error) {
 func (self *Game) GetById(gameID uint) (*model.Game, error) {
 	var game model.Game
 
-	result := self.db.DB.Model(&model.Game{}).Preload("User").Preload("Opponent").Preload("Status").Where("id = ?", gameID).First(&game)
+	result := self.db.DB.Model(&model.Game{}).Preload("User").Preload("Opponent").Preload("Status").Preload("Winner").Where("id = ?", gameID).First(&game)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, errs.NotFound

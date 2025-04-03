@@ -145,3 +145,36 @@ func (self *Game) acceptGameRequest(game *model.Game) error {
 func (self *Game) declineGameRequest(game *model.Game) error {
 	return self.gameRepository.DeleteGame(game.ID)
 }
+
+func (self *Game) EndGame(gameID uint, winnerID uint) error {
+	game, err := self.gameRepository.GetById(gameID)
+	if err != nil {
+		return err
+	}
+
+	status, err := self.statusRepository.GetByStatus(model.StatusEnd)
+	if err != nil {
+		return err
+	}
+
+	game.Status = *status
+	game.WinnerID = &winnerID
+
+	err = self.gameRepository.Update(game)
+
+	return nil
+}
+
+func (self *Game) IsUserOwner(user *model.User, gameID uint) (bool, error) {
+	game, err := self.gameRepository.GetById(gameID)
+	if err != nil {
+		return false, err
+	}
+
+	if game.User.ID == user.ID {
+		return true, nil
+	}
+
+	return false, nil
+
+}

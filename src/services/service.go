@@ -45,4 +45,6 @@ type GameInterface interface {
 	GetUsersRequestedGame(*model.User) ([]model.Game, error)
 	GetUsersEndedGame(*model.User) ([]model.Game, error)
 	AcceptOrNotGame(uint, *model.User, bool) error
+	EndGame(uint, uint) error
+	IsUserOwner(*model.User, uint) (bool, error)
 }
