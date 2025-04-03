@@ -49,12 +49,12 @@ func (self *Game) ImageToFem(img []byte) (string, error) {
 	return response, nil
 }
 
-func (self *Game) CreateGame(owner *model.User, opponent *model.User, fem string) (*model.Game, error) {
+func (self *Game) CreateGame(owner *model.User, opponent *model.User, whitePlayerID uint, fem string) (*model.Game, error) {
 	status, err := self.statusRepository.GetByStatus(model.StatusPending)
 	if err != nil {
 		return nil, err
 	}
-	game, err := self.gameRepository.CreateGame(owner.ID, opponent.ID, fem, status.ID)
+	game, err := self.gameRepository.CreateGame(owner.ID, opponent.ID, whitePlayerID, fem, status.ID)
 	if err != nil {
 		return nil, err
 	}

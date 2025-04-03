@@ -29,12 +29,13 @@ func GetGameInstance() GameInterface {
 	return singleGameInstance
 }
 
-func (self *Game) CreateGame(ownerID uint, opponentID uint, fem string, statusID uint) (*model.Game, error) {
+func (self *Game) CreateGame(ownerID uint, opponentID uint, whitePlayerID uint, fem string, statusID uint) (*model.Game, error) {
 	game := model.Game{
-		UserID:     ownerID,
-		OpponentID: opponentID,
-		Board:      fem,
-		StatusID:   statusID,
+		UserID:        ownerID,
+		OpponentID:    opponentID,
+		Board:         fem,
+		StatusID:      statusID,
+		WhitePlayerID: &whitePlayerID,
 	}
 
 	result := self.db.DB.Create(&game)

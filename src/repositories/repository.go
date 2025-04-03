@@ -42,7 +42,7 @@ type IAInterface interface {
 }
 
 type GameInterface interface {
-	CreateGame(uint, uint, string, uint) (*model.Game, error)
+	CreateGame(uint, uint, uint, string, uint) (*model.Game, error)
 	GetUsersGame(uint) ([]model.Game, error)
 	GetById(uint) (*model.Game, error)
 	DeleteGame(uint) error
