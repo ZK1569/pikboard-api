@@ -83,7 +83,7 @@ func (self *Game) getPossitionFromImg(w http.ResponseWriter, r *http.Request) {
 }
 
 type NewGameBody struct {
-	Fem        string `json:"fem" validate:"gte=5"`
+	Fen        string `json:"fen" validate:"gte=5"`
 	OpponentID uint   `json:"opponent_id"`
 }
 
@@ -116,7 +116,7 @@ func (self *Game) createNewGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = self.gameService.CreateGame(user, opponent, bodyGame.Fem)
+	_, err = self.gameService.CreateGame(user, opponent, bodyGame.Fen)
 	if err != nil {
 		jsonResponseError(w, err)
 		return
