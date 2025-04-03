@@ -63,7 +63,7 @@ func (self *Game) CreateGame(owner *model.User, opponent *model.User, fem string
 }
 
 func (self *Game) GetUsersCurrentGame(user *model.User) ([]model.Game, error) {
-	var currentGames []model.Game
+	currentGames := []model.Game{}
 
 	games, err := self.gameRepository.GetUsersGame(user.ID)
 	if err != nil {
@@ -77,6 +77,40 @@ func (self *Game) GetUsersCurrentGame(user *model.User) ([]model.Game, error) {
 	}
 
 	return currentGames, nil
+}
+
+func (self *Game) GetUsersRequestedGame(user *model.User) ([]model.Game, error) {
+	requestedGames := []model.Game{}
+
+	games, err := self.gameRepository.GetUsersGame(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, game := range games {
+		if game.Status.Status == model.StatusPending {
+			requestedGames = append(requestedGames, game)
+		}
+	}
+
+	return requestedGames, nil
+}
+
+func (self *Game) GetUsersEndedGame(user *model.User) ([]model.Game, error) {
+	endedGames := []model.Game{}
+
+	games, err := self.gameRepository.GetUsersGame(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, game := range games {
+		if game.Status.Status == model.StatusEnd {
+			endedGames = append(endedGames, game)
+		}
+	}
+
+	return endedGames, nil
 }
 
 func (self *Game) AcceptOrNotGame(gameID uint, user *model.User, answer bool) error {

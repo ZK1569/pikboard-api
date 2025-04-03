@@ -41,6 +41,8 @@ func (self *Game) Mount(r chi.Router) {
 	r.Route(self.path, func(r chi.Router) {
 		r.Use(GetMiddlewareInstance().AuthTokenMiddleware)
 		r.Get("/current", self.getCurrentGames)
+		r.Get("/request", self.getRequestedGames)
+		r.Get("/end", self.getEndedGames)
 		r.Post("/accept", self.acceptOrNotGame)
 		r.Post("/position", self.getPossitionFromImg)
 		r.Post("/new", self.createNewGame)
@@ -135,6 +137,31 @@ func (self *Game) getCurrentGames(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusOK, games)
+}
+
+func (self *Game) getRequestedGames(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	games, err := self.gameService.GetUsersRequestedGame(user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, games)
+}
+
+func (self *Game) getEndedGames(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+
+	games, err := self.gameService.GetUsersEndedGame(user)
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, games)
+
 }
 
 type AcceptOrNotGameBody struct {

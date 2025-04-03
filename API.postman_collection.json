@@ -333,7 +333,34 @@
 			"name": "Game",
 			"item": [
 				{
-					"name": "🚫 Get current games",
+					"name": "✅ Create new game",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fem\": \"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b - - 0 1\",\n    \"opponent_id\": 4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/game/new",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get current games",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -351,25 +378,7 @@
 					"response": []
 				},
 				{
-					"name": "🚫 Create new game",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/game/new",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"game",
-								"new"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "🚫 Get game position from image",
+					"name": "✅ Get game position from image",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -377,9 +386,9 @@
 							"mode": "formdata",
 							"formdata": [
 								{
-									"key": "image",
+									"key": "img",
 									"type": "file",
-									"src": "/Users/zk/Library/Mobile Documents/com~apple~CloudDocs/Capture d'Ecrant/Capture d’écran 2025-02-10 à 17.51.05.png"
+									"src": "postman-cloud:///1f00e9dd-b9c3-4ff0-82e2-2ece9e3938cd"
 								}
 							]
 						},
@@ -391,6 +400,39 @@
 							"path": [
 								"game",
 								"position"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Accept or not game",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n     \"answer\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/game/accept?g=5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game",
+								"accept"
+							],
+							"query": [
+								{
+									"key": "g",
+									"value": "5"
+								}
 							]
 						}
 					},
@@ -414,6 +456,42 @@
 									"key": "pas encore choisie comment faire",
 									"value": ""
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get game requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/game/request",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get ended games",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/game/end",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"game",
+								"end"
 							]
 						}
 					},
@@ -587,7 +665,7 @@
 			"name": "Chess",
 			"item": [
 				{
-					"name": "✅ FEM to image",
+					"name": "✅ FEN to image",
 					"request": {
 						"auth": {
 							"type": "noauth"
