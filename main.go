@@ -40,7 +40,7 @@ func main() {
 		IdleTimeout:  time.Minute,
 	}
 
-	log.Printf("Server is running at%s\n", adr)
+	log.Printf("Server is running at %s\n", adr)
 	srv.ListenAndServe()
 
 }
