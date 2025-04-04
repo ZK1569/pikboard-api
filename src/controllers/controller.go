@@ -9,14 +9,19 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/websocket"
 	errs "github.com/zk1569/pikboard-api/src/errors"
 	model "github.com/zk1569/pikboard-api/src/models"
 )
 
 var (
-	Validate *validator.Validate
-	lock     *sync.Mutex
-	userCtx  = "user"
+	Validate          *validator.Validate
+	lock              *sync.Mutex
+	userCtx           = "user"
+	websocketUpgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
 )
 
 type MangaInterface interface {

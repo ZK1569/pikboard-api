@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/go-chi/chi/v5"
 	errs "github.com/zk1569/pikboard-api/src/errors"
@@ -17,6 +18,9 @@ type Game struct {
 	path        string
 	gameService service.GameInterface
 	userService service.UserInterface
+
+	clients ClientList
+	sync.RWMutex
 }
 
 var singleGameInstance *Game
@@ -30,6 +34,8 @@ func GetGameInsance() *Game {
 				path:        "/game",
 				gameService: service.GetGameInsance(),
 				userService: service.GetUserInstance(),
+
+				clients: make(ClientList),
 			}
 		}
 	}
@@ -47,6 +53,7 @@ func (self *Game) Mount(r chi.Router) {
 		r.Post("/accept", self.acceptOrNotGame)
 		r.Post("/position", self.getPossitionFromImg)
 		r.Post("/new", self.createNewGame)
+		r.HandleFunc("/chess", self.serverWS)
 	})
 }
 
@@ -249,4 +256,39 @@ func (self *Game) endGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse(w, http.StatusOK, nil)
+}
+
+func (self *Game) serverWS(w http.ResponseWriter, r *http.Request) {
+	log.Println("new connection")
+
+	conn, err := websocketUpgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	client := NewClient(conn, self)
+
+	self.addClient(client)
+
+	go client.readMessage()
+	go client.writeMessage()
+
+}
+
+func (self *Game) addClient(client *Client) {
+	self.Lock()
+	defer self.Unlock()
+
+	self.clients[client] = true
+}
+
+func (self *Game) removeClient(client *Client) {
+	self.Lock()
+	defer self.Unlock()
+
+	if _, ok := self.clients[client]; ok {
+		client.connection.Close()
+		delete(self.clients, client)
+	}
 }
