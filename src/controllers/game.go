@@ -259,7 +259,19 @@ func (self *Game) endGame(w http.ResponseWriter, r *http.Request) {
 }
 
 func (self *Game) serverWS(w http.ResponseWriter, r *http.Request) {
-	log.Println("new connection")
+	defer r.Body.Close()
+
+	gameIDstr := r.URL.Query().Get("g")
+	if gameIDstr == "" {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+	gameID64, err := strconv.ParseInt(gameIDstr, 10, 32)
+	if err != nil {
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+	gameID := uint(gameID64)
 
 	conn, err := websocketUpgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -267,7 +279,7 @@ func (self *Game) serverWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := NewClient(conn, self)
+	client := NewClient(conn, self, gameID)
 
 	self.addClient(client)
 
@@ -291,4 +303,34 @@ func (self *Game) removeClient(client *Client) {
 		client.connection.Close()
 		delete(self.clients, client)
 	}
+}
+
+func (self *Game) playAMove(gameID uint, newPosition string) error {
+
+	game, err := self.gameService.GetByID(gameID)
+	if err != nil {
+		log.Printf("Error a la reception du message jpc a la reception: %v", err)
+		return err
+	}
+
+	self.gameService.MakeAMove(game, newPosition)
+
+	self.sendBackToSameGame(gameID)
+
+	return nil
+}
+
+func (self *Game) sendBackToSameGame(gameID uint) error {
+	game, err := self.gameService.GetByID(gameID)
+	if err != nil {
+		log.Printf("Error a la reception du message jpc: %v", err)
+		return err
+	}
+
+	for wsclient := range self.clients {
+		if wsclient.gameID == gameID {
+			wsclient.egress <- []byte(game.Board)
+		}
+	}
+	return nil
 }

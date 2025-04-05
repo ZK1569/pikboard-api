@@ -178,3 +178,18 @@ func (self *Game) IsUserOwner(user *model.User, gameID uint) (bool, error) {
 	return false, nil
 
 }
+
+func (self *Game) GetByID(gameID uint) (*model.Game, error) {
+	return self.gameRepository.GetById(gameID)
+}
+
+func (self *Game) MakeAMove(game *model.Game, newPosition string) error {
+	game.Board = newPosition
+
+	err := self.gameRepository.Update(game)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

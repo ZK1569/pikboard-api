@@ -9,16 +9,18 @@ import (
 type Client struct {
 	connection *websocket.Conn
 	manager    *Game
+	gameID     uint
 
 	egress chan []byte
 }
 
 type ClientList map[*Client]bool
 
-func NewClient(conn *websocket.Conn, manager *Game) *Client {
+func NewClient(conn *websocket.Conn, manager *Game, gameID uint) *Client {
 	return &Client{
 		connection: conn,
 		manager:    manager,
+		gameID:     gameID,
 		egress:     make(chan []byte),
 	}
 }
@@ -29,7 +31,7 @@ func (self *Client) readMessage() {
 	}()
 
 	for {
-		messageType, payload, err := self.connection.ReadMessage()
+		_, payload, err := self.connection.ReadMessage()
 
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -38,12 +40,8 @@ func (self *Client) readMessage() {
 			break
 		}
 
-		for wsclient := range self.manager.clients {
-			wsclient.egress <- payload
-		}
+		self.manager.playAMove(self.gameID, string(payload))
 
-		log.Println(messageType)
-		log.Println(string(payload))
 	}
 }
 
@@ -66,7 +64,6 @@ func (self *Client) writeMessage() {
 			if err := self.connection.WriteMessage(websocket.TextMessage, message); err != nil {
 				log.Printf("Failled to send message: %v", err)
 			}
-			log.Println("Message sent")
 		}
 	}
 }

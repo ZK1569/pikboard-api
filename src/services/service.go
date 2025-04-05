@@ -47,4 +47,6 @@ type GameInterface interface {
 	AcceptOrNotGame(uint, *model.User, bool) error
 	EndGame(uint, uint) error
 	IsUserOwner(*model.User, uint) (bool, error)
+	GetByID(uint) (*model.Game, error)
+	MakeAMove(*model.Game, string) error
 }
