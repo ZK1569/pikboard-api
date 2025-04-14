@@ -127,13 +127,13 @@ func (self *Game) createNewGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = self.gameService.CreateGame(user, opponent, bodyGame.WhitePlayerID, bodyGame.Fen)
+	game, err := self.gameService.CreateGame(user, opponent, bodyGame.WhitePlayerID, bodyGame.Fen)
 	if err != nil {
 		jsonResponseError(w, err)
 		return
 	}
 
-	jsonResponse(w, http.StatusCreated, nil)
+	jsonResponse(w, http.StatusCreated, game)
 }
 
 func (self *Game) getCurrentGames(w http.ResponseWriter, r *http.Request) {
