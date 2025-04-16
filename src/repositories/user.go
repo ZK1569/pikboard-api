@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"strings"
 
 	errs "github.com/zk1569/pikboard-api/src/errors"
 	model "github.com/zk1569/pikboard-api/src/models"
@@ -30,6 +31,9 @@ func GetUserInstance() UserInterface {
 }
 
 func (self *User) CreateUser(username, email string, password [64]byte) (*model.User, error) {
+	sess := self.db.DB.Session(&gorm.Session{})
+	sess.Config.TranslateError = false
+
 	user := model.User{
 		Username: username,
 		Email:    email,
@@ -37,12 +41,21 @@ func (self *User) CreateUser(username, email string, password [64]byte) (*model.
 		Image:    "https://pikboard.s3.eu-west-1.amazonaws.com/profile_image/default_profile_image.jpg",
 	}
 
-	result := self.db.DB.Create(&user)
+	result := sess.Create(&user)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+		err := result.Error
+
+		if strings.Contains(err.Error(), "duplicate key value") {
+			if strings.Contains(err.Error(), "uni_users_username") {
+				return nil, errs.UserAlreadyExists
+			}
+			if strings.Contains(err.Error(), "uni_users_email") {
+				return nil, errs.EmailAlreadyExists
+			}
 			return nil, errs.AlreadyExists
 		}
-		return nil, result.Error
+
+		return nil, err
 	}
 
 	return &user, nil
