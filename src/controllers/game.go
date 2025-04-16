@@ -53,6 +53,7 @@ func (self *Game) Mount(r chi.Router) {
 		r.Post("/accept", self.acceptOrNotGame)
 		r.Post("/position", self.getPossitionFromImg)
 		r.Post("/new", self.createNewGame)
+		r.Put("/move", self.makeAMove)
 		r.HandleFunc("/chess", self.serverWS)
 	})
 }
@@ -250,6 +251,42 @@ func (self *Game) endGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = self.gameService.EndGame(uint(gameBody.GameID), uint(gameBody.WinnerID))
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, nil)
+}
+
+type MakeAMoveBody struct {
+	GameID int    `json:"game_id" validate:"required"`
+	Board  string `json:"board" validate:"required"`
+}
+
+func (self *Game) makeAMove(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var gameBody MakeAMoveBody
+	if err := json.NewDecoder(r.Body).Decode(&gameBody); err != nil {
+		log.Printf("Error: body decode %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	if err := Validate.Struct(gameBody); err != nil {
+		log.Printf("Error: Validation error %v", err)
+		jsonResponseError(w, errs.BadRequest)
+		return
+	}
+
+	game, err := self.gameService.GetByID(uint(gameBody.GameID))
+	if err != nil {
+		jsonResponseError(w, err)
+		return
+	}
+
+	err = self.gameService.MakeAMove(game, gameBody.Board)
 	if err != nil {
 		jsonResponseError(w, err)
 		return
